@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
 )
 
@@ -12,14 +11,9 @@ func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Reques
 		"Version":     version,
 	}
 
-	jsonResponse, err := json.Marshal(data)
+	err := app.writeJSON(w, http.StatusOK, data, nil)
 	if err != nil {
 		app.logger.Print(err)
-		http.Error(w, "The server encountered an internal error, could not process your request", http.StatusInternalServerError)
-		return
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
-
-	jsonResponse = append(jsonResponse, '\n')
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(jsonResponse))
 }
