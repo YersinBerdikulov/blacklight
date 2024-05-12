@@ -5,13 +5,15 @@ import (
 )
 
 func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Request) {
-	data := map[string]string{
-		"Status":      "OK",
-		"Environment": app.config.env,
-		"Version":     version,
+	env := envelope{
+		"Status": "OK",
+		"SystemInfo": map[string]string{
+			"Environment": app.config.env,
+			"Version":     version,
+		},
 	}
 
-	err := app.writeJSON(w, http.StatusOK, data, nil)
+	err := app.writeJSON(w, http.StatusOK, env, nil)
 	if err != nil {
 		app.logger.Print(err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
